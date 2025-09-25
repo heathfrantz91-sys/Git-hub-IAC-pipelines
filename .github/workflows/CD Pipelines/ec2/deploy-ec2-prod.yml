@@ -34,7 +34,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: ⚙️ Terraform Init (EC2)
-        run: terraform -chdir=infrastructure/ec2 init
+        run: terraform init
+        working-directory: infrastructure/ec2
 
       - name: 🧹 Terraform Format (EC2)
         run: terraform fmt -check
@@ -45,4 +46,5 @@ jobs:
         working-directory: infrastructure/ec2
 
       - name: 🚀 Terraform Apply (EC2)
-        run: terraform -chdir=infrastructure/ec2 apply -auto-approve -var-file=prod.tfvars
+        run: terraform apply -auto-approve -var-file=prod.tfvars
+        working-directory: infrastructure/ec2

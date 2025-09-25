@@ -34,7 +34,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: ⚙️ Terraform Init (S3)
-        run: terraform -chdir=infrastructure/s3 init
+        run: terraform init
+        working-directory: infrastructure/s3
 
       - name: 🧹 Terraform Format (S3)
         run: terraform fmt -check
@@ -45,4 +46,5 @@ jobs:
         working-directory: infrastructure/s3
 
       - name: 🚀 Terraform Apply (S3)
-        run: terraform -chdir=infrastructure/s3 apply -auto-approve -var-file=dev.tfvars
+        run: terraform apply -auto-approve -var-file=dev.tfvars
+        working-directory: infrastructure/s3
