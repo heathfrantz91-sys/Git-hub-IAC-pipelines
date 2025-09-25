@@ -26,18 +26,15 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure AWS credentials for QA
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.QA_AWS_SESSION_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
-        run: |
-          export TF_LOG=DEBUG
-          terraform -chdir=infrastructure/s3 init
+        run: terraform -chdir=infrastructure/s3 init
 
       - name: Terraform fmt
         run: terraform fmt
@@ -48,9 +45,7 @@ jobs:
         working-directory: infrastructure/s3
 
       - name: Terraform Show Plan
-        run: |
-          export TF_LOG=DEBUG
-          terraform show tfplan
+        run: terraform show tfplan
         working-directory: infrastructure/s3
 
       - name: Terraform Apply
