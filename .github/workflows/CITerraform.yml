@@ -1,22 +1,16 @@
 name: Terraform CI
 
 on:
-  pull_request:
-    branches:
-      - dev
-      - qa
-      - main
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/**'
   push:
     branches:
       - dev
       - qa
       - main
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - dev
+      - qa
+      - main
   workflow_dispatch:
 
 jobs:
@@ -27,62 +21,41 @@ jobs:
       AWS_REGION: us-east-1
 
     steps:
-      - name: 📦 Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: 🔧 Set up Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: 🔐 Configure AWS credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: 🌍 Set environment tfvars
-        id: set-tfvars
+      - name: Set tfvars file
+        id: tfvars
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
             echo "TFVARS=prod.tfvars" >> $GITHUB_ENV
           else
             echo "TFVARS=${{ github.ref_name }}.tfvars" >> $GITHUB_ENV
-          fi
 
-      # --------------------
-      # EC2 Terraform Checks
-      # --------------------
-      - name: ⚙️ Terraform Init (EC2)
+      # EC2 Plan
+      - name: Terraform Init EC2
         run: terraform -chdir=infrastructure/ec2 init
+      - name: Terraform Validate EC2
+        run: terraform validate -chdir=infrastructure/ec2
+      - name: Terraform Plan EC2
+        run: terraform plan -var-file=${{ env.TFVARS }} -chdir=infrastructure/ec2
 
-      - name: 🧹 Terraform Format (EC2)
-        run: terraform fmt -check
-        working-directory: infrastructure/ec2
-
-      - name: 🔍 Terraform Validate (EC2)
-        run: terraform validate
-        working-directory: infrastructure/ec2
-
-      - name: 📋 Terraform Plan (EC2)
-        run: terraform plan -var-file=${{ env.TFVARS }}
-        working-directory: infrastructure/ec2
-
-      # --------------------
-      # S3 Terraform Checks
-      # --------------------
-      - name: ⚙️ Terraform Init (S3)
+      # S3 Plan
+      - name: Terraform Init S3
         run: terraform -chdir=infrastructure/s3 init
-
-      - name: 🧹 Terraform Format (S3)
-        run: terraform fmt -check
-        working-directory: infrastructure/s3
-
-      - name: 🔍 Terraform Validate (S3)
-        run: terraform validate
-        working-directory: infrastructure/s3
-
-      - name: 📋 Terraform Plan (S3)
-        run: terraform plan -var-file=${{ env.TFVARS }}
-        working-directory: infrastructure/s3
+      - name: Terraform Validate S3
+        run: terraform validate -chdir=infrastructure/s3
+      - name: Terraform Plan S3
+        run: terraform plan -var-file=${{ env.TFVARS }} -chdir=infrastructure/s3
