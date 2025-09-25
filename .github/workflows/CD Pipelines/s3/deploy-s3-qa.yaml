@@ -1,53 +1,47 @@
-name: Deploy S3 Bucket - QA
+name: Deploy S3 - QA
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Terraform CI"]   # 👈 must exactly match the name in CITerraform.yml
+    types:
+      - completed
     branches:
-      - qa   # ✅ Trigger only on qa branch
-    paths:
-      - 'infrastructure/s3/**'
-      - '.github/workflows/deploy-s3-qa.yaml'
+      - qa   # ✅ Runs only after CI completes on qa branch
 
 env:
-  TF_VERSION: 1.4.0
+  TF_VERSION: 1.5.0
   AWS_REGION: us-east-1
 
 jobs:
-  terraform:
-    name: Terraform Init, Format, Validate, Plan, Apply
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: 📦 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: 🔧 Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Terraform Init
+      - name: ⚙️ Terraform Init (S3)
         run: terraform -chdir=infrastructure/s3 init
 
-      - name: Terraform fmt
-        run: terraform fmt
+      - name: 🧹 Terraform Fmt (S3)
+        run: terraform fmt -check
         working-directory: infrastructure/s3
 
-      - name: Terraform Plan
+      - name: 📋 Terraform Plan (S3)
         run: terraform plan -out=tfplan -var-file=qa.tfvars
         working-directory: infrastructure/s3
 
-      - name: Terraform Show Plan
-        run: terraform show tfplan
-        working-directory: infrastructure/s3
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/qa'   # ✅ Only apply when on qa branch
+      - name: 🚀 Terraform Apply (S3)
         run: terraform -chdir=infrastructure/s3 apply -auto-approve -var-file=qa.tfvars
