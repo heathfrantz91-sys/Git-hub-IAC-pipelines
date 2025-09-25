@@ -1,5 +1,5 @@
-create    = true
-key_name  = "dev-keypair"
+create   = true
+key_name = "dev-keypair"
 
 instance_tags = {
   Environment = "dev"
