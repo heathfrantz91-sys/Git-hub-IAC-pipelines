@@ -6,6 +6,5 @@ module "ec2_instance" {
   key_name            = var.key_name
   subnet_id           = var.subnet_id
   security_group_ids  = var.security_group_ids
-  instance_tags       = local.final_tags
   create              = true
 }
