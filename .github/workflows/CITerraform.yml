@@ -44,6 +44,7 @@ jobs:
             echo "TFVARS=prod.tfvars" >> $GITHUB_ENV
           else
             echo "TFVARS=${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
+          fi
 
       # --------------------
       # EC2 Terraform Plan
