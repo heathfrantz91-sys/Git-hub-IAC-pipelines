@@ -21,41 +21,58 @@ jobs:
       AWS_REGION: us-east-1
 
     steps:
-      - name: Checkout
+      - name: 📦 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: 🔧 Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set tfvars file
+      - name: 🌍 Set tfvars file based on branch
         id: tfvars
         run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "Branch: $GITHUB_REF_NAME"
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
             echo "TFVARS=prod.tfvars" >> $GITHUB_ENV
           else
-            echo "TFVARS=${{ github.ref_name }}.tfvars" >> $GITHUB_ENV
+            echo "TFVARS=${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
+          fi
 
-      # EC2 Plan
-      - name: Terraform Init EC2
+      # --------------------
+      # EC2 Terraform Plan
+      # --------------------
+      - name: ⚙️ Terraform Init EC2
         run: terraform -chdir=infrastructure/ec2 init
-      - name: Terraform Validate EC2
+
+      - name: 🧹 Terraform Validate EC2
         run: terraform validate -chdir=infrastructure/ec2
-      - name: Terraform Plan EC2
+
+      - name: 📋 Terraform Plan EC2
         run: terraform plan -var-file=${{ env.TFVARS }} -chdir=infrastructure/ec2
 
-      # S3 Plan
-      - name: Terraform Init S3
+      # --------------------
+      # S3 Terraform Plan
+      # --------------------
+      - name: ⚙️ Terraform Init S3
         run: terraform -chdir=infrastructure/s3 init
-      - name: Terraform Validate S3
+
+      - name: 🧹 Terraform Validate S3
         run: terraform validate -chdir=infrastructure/s3
-      - name: Terraform Plan S3
+
+      - name: 📋 Terraform Plan S3
         run: terraform plan -var-file=${{ env.TFVARS }} -chdir=infrastructure/s3
+
+      # --------------------
+      # Set output for downstream CD workflows
+      # --------------------
+      - name: ✅ Set workflow success output
+        id: set_output
+        run: echo "terraform_status=success" >> $GITHUB_ENV

@@ -2,11 +2,11 @@ name: Deploy EC2 - Prod
 
 on:
   workflow_run:
-    workflows: ["Terraform CI"]   # 👈 must match the name in CITerraform.yml
+    workflows: ["Terraform CI"]
     types:
       - completed
     branches:
-      - main   # ✅ Use main as production branch
+      - main
 
 env:
   TF_VERSION: 1.5.0
@@ -16,6 +16,7 @@ jobs:
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: 📦 Checkout repository
         uses: actions/checkout@v3
@@ -35,7 +36,7 @@ jobs:
       - name: ⚙️ Terraform Init (EC2)
         run: terraform -chdir=infrastructure/ec2 init
 
-      - name: 🧹 Terraform Fmt (EC2)
+      - name: 🧹 Terraform Format (EC2)
         run: terraform fmt -check
         working-directory: infrastructure/ec2
 

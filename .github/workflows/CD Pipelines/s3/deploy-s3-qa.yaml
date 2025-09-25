@@ -2,11 +2,11 @@ name: Deploy S3 - QA
 
 on:
   workflow_run:
-    workflows: ["Terraform CI"]   # 👈 must exactly match the name in CITerraform.yml
+    workflows: ["Terraform CI"]
     types:
       - completed
     branches:
-      - qa   # ✅ Runs only after CI completes on qa branch
+      - qa
 
 env:
   TF_VERSION: 1.5.0
@@ -16,6 +16,7 @@ jobs:
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: 📦 Checkout repository
         uses: actions/checkout@v3
@@ -35,7 +36,7 @@ jobs:
       - name: ⚙️ Terraform Init (S3)
         run: terraform -chdir=infrastructure/s3 init
 
-      - name: 🧹 Terraform Fmt (S3)
+      - name: 🧹 Terraform Format (S3)
         run: terraform fmt -check
         working-directory: infrastructure/s3
 
