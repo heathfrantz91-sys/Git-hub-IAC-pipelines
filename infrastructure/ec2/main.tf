@@ -7,8 +7,8 @@ provider "aws" {
 #############################
 
 locals {
-  environment    = "dev"  # 👈 Change via tfvars if needed
-  instance_name  = "my-${formatdate("MMdd", timestamp())}-ec2-${local.environment}"
+  environment   = "dev" # 👈 Change via tfvars if needed
+  instance_name = "my-${formatdate("MMdd", timestamp())}-ec2-${local.environment}"
 
   base_tags = {
     Owner = "YourName"
