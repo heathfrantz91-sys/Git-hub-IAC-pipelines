@@ -3,7 +3,7 @@ name: Deploy EC2 Instance - QA
 on:
   push:
     branches:
-      - qa   # ✅ Trigger only on qa branch
+      - qa   # ✅ Trigger only on QA branch
     paths:
       - 'infrastructure/ec2/**'
       - '.github/workflows/deploy-ec2-qa.yaml'
@@ -18,41 +18,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 📦 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: 🔧 Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure AWS credentials for QA
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: 🔐 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.QA_AWS_SESSION_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Terraform Init
+      - name: ⚙️ Terraform Init
         run: |
           export TF_LOG=DEBUG
           terraform -chdir=infrastructure/ec2 init
 
-      - name: Terraform fmt
+      - name: 🧹 Terraform Fmt
         run: terraform fmt
         working-directory: infrastructure/ec2
 
-      - name: Terraform Plan
+      - name: 📋 Terraform Plan
         run: terraform plan -out=tfplan -var-file=qa.tfvars
         working-directory: infrastructure/ec2
 
-      - name: Terraform Show Plan
+      - name: 🔍 Terraform Show Plan
         run: |
           export TF_LOG=DEBUG
           terraform show tfplan
         working-directory: infrastructure/ec2
 
-      - name: Terraform Apply
+      - name: 🚀 Terraform Apply
         if: github.ref == 'refs/heads/qa'
         run: terraform -chdir=infrastructure/ec2 apply -auto-approve -var-file=qa.tfvars
