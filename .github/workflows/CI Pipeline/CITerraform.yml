@@ -1,11 +1,13 @@
-name: Terraform CI - Dev
+name: Terraform CI
 
 on:
   pull_request:
     branches:
       - dev
+      - qa
+      - main
     paths:
-      - 'infrastructure/s3/**'
+      - 'infrastructure/**'
       - '.github/workflows/**'
 
 jobs:
@@ -24,17 +26,45 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Terraform Init
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # --------------------
+      # EC2 Terraform Checks
+      # --------------------
+      - name: Terraform Init (EC2)
+        run: terraform -chdir=infrastructure/ec2 init
+
+      - name: Terraform Format (EC2)
+        run: terraform fmt -check
+        working-directory: infrastructure/ec2
+
+      - name: Terraform Validate (EC2)
+        run: terraform validate
+        working-directory: infrastructure/ec2
+
+      - name: Terraform Plan (EC2)
+        run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
+        working-directory: infrastructure/ec2
+
+      # --------------------
+      # S3 Terraform Checks
+      # --------------------
+      - name: Terraform Init (S3)
         run: terraform -chdir=infrastructure/s3 init
 
-      - name: Terraform Format
+      - name: Terraform Format (S3)
         run: terraform fmt -check
         working-directory: infrastructure/s3
 
-      - name: Terraform Validate
+      - name: Terraform Validate (S3)
         run: terraform validate
         working-directory: infrastructure/s3
 
-      - name: Terraform Plan
-        run: terraform plan -var-file=dev.tfvars
+      - name: Terraform Plan (S3)
+        run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
         working-directory: infrastructure/s3
