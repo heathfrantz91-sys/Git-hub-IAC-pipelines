@@ -9,6 +9,15 @@ on:
     paths:
       - 'infrastructure/**'
       - '.github/workflows/**'
+  push:                       # ✅ trigger on direct pushes
+    branches:
+      - dev
+      - qa
+      - main
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/**'
+  workflow_dispatch:          # ✅ manual trigger button in Actions tab
 
 jobs:
   terraform-ci:
@@ -18,15 +27,15 @@ jobs:
       AWS_REGION: us-east-1
 
     steps:
-      - name: Checkout Repository
+      - name: 📦 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: 🔧 Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -36,35 +45,35 @@ jobs:
       # --------------------
       # EC2 Terraform Checks
       # --------------------
-      - name: Terraform Init (EC2)
+      - name: ⚙️ Terraform Init (EC2)
         run: terraform -chdir=infrastructure/ec2 init
 
-      - name: Terraform Format (EC2)
+      - name: 🧹 Terraform Format (EC2)
         run: terraform fmt -check
         working-directory: infrastructure/ec2
 
-      - name: Terraform Validate (EC2)
+      - name: 🔍 Terraform Validate (EC2)
         run: terraform validate
         working-directory: infrastructure/ec2
 
-      - name: Terraform Plan (EC2)
+      - name: 📋 Terraform Plan (EC2)
         run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
         working-directory: infrastructure/ec2
 
       # --------------------
       # S3 Terraform Checks
       # --------------------
-      - name: Terraform Init (S3)
+      - name: ⚙️ Terraform Init (S3)
         run: terraform -chdir=infrastructure/s3 init
 
-      - name: Terraform Format (S3)
+      - name: 🧹 Terraform Format (S3)
         run: terraform fmt -check
         working-directory: infrastructure/s3
 
-      - name: Terraform Validate (S3)
+      - name: 🔍 Terraform Validate (S3)
         run: terraform validate
         working-directory: infrastructure/s3
 
-      - name: Terraform Plan (S3)
+      - name: 📋 Terraform Plan (S3)
         run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
         working-directory: infrastructure/s3
