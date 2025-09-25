@@ -9,7 +9,7 @@ on:
     paths:
       - 'infrastructure/**'
       - '.github/workflows/**'
-  push:                       # ✅ trigger on direct pushes
+  push:
     branches:
       - dev
       - qa
@@ -17,7 +17,7 @@ on:
     paths:
       - 'infrastructure/**'
       - '.github/workflows/**'
-  workflow_dispatch:          # ✅ manual trigger button in Actions tab
+  workflow_dispatch:
 
 jobs:
   terraform-ci:
@@ -42,6 +42,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: 🌍 Set environment tfvars
+        id: set-tfvars
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "TFVARS=prod.tfvars" >> $GITHUB_ENV
+          else
+            echo "TFVARS=${{ github.ref_name }}.tfvars" >> $GITHUB_ENV
+          fi
+
       # --------------------
       # EC2 Terraform Checks
       # --------------------
@@ -57,7 +66,7 @@ jobs:
         working-directory: infrastructure/ec2
 
       - name: 📋 Terraform Plan (EC2)
-        run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
+        run: terraform plan -var-file=${{ env.TFVARS }}
         working-directory: infrastructure/ec2
 
       # --------------------
@@ -75,5 +84,5 @@ jobs:
         working-directory: infrastructure/s3
 
       - name: 📋 Terraform Plan (S3)
-        run: terraform plan -var-file=${{ github.ref_name == 'main' && 'prod.tfvars' || github.ref_name + '.tfvars' }}
+        run: terraform plan -var-file=${{ env.TFVARS }}
         working-directory: infrastructure/s3
