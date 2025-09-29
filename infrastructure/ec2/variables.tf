@@ -1,25 +1,16 @@
-variable "create" {
-  description = "Whether to create an EC2 instance"
-  type        = bool
-  default     = true
-}
-
 variable "name" {
   description = "Name of the EC2 instance"
   type        = string
-  default     = "unknownec2instance"
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro"
 }
 
 variable "ami" {
-  description = "Optional AMI ID (if empty, latest Ubuntu will be used)"
+  description = "AMI ID to use for the EC2 instance"
   type        = string
-  default     = ""
 }
 
 variable "key_name" {
@@ -29,7 +20,7 @@ variable "key_name" {
 }
 
 variable "subnet_id" {
-  description = "Subnet ID where instance will be launched"
+  description = "Subnet ID where the instance will be launched"
   type        = string
 }
 
@@ -39,26 +30,20 @@ variable "security_group_ids" {
   default     = []
 }
 
-variable "instance_tags" {
-  description = "Additional tags for the instance"
+variable "tags" {
+  description = "Map of tags to apply to the instance"
   type        = map(string)
   default     = {}
 }
 
-variable "environment" {
-  description = "Environment (dev, qa, prod)"
-  type        = string
-  default     = "dev"
-}
-
 variable "cpu_core_count" {
-  description = "Number of CPU cores for the instance (optional)"
+  description = "Number of CPU cores (optional)"
   type        = number
   default     = null
 }
 
 variable "cpu_threads_per_core" {
-  description = "Threads per core for the instance (optional)"
+  description = "Threads per core (optional)"
   type        = number
   default     = null
 }
