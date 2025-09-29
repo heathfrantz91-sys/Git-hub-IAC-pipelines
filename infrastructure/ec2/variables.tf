@@ -47,3 +47,8 @@ variable "cpu_threads_per_core" {
   type        = number
   default     = null
 }
+
+variable "vpc_security_group_ids" {
+  description = "List of VPC security group IDs to attach to the EC2 instance"
+  type        = list(string)
+}
