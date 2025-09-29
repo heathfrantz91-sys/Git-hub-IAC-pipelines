@@ -43,10 +43,3 @@ module "ec2_instance" {
   ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
   vpc_security_group_ids = var.security_group_ids
   tags                   = local.final_tags
-
-  # ✅ Correct way: pass cpu_options as a map
-  cpu_options = var.cpu_core_count != null && var.cpu_threads_per_core != null ? {
-    core_count       = var.cpu_core_count
-    threads_per_core = var.cpu_threads_per_core
-  } : null
-}
