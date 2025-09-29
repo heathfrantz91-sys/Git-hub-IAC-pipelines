@@ -20,7 +20,7 @@ data "aws_ami" "default_ubuntu" {
   owners = ["099720109477"] # Canonical (Ubuntu)
 }
 
-# ✅ Define local tags to use in the module
+# Define local tags to use in the module
 locals {
   final_tags = merge(
     {
@@ -31,7 +31,7 @@ locals {
   )
 }
 
-# ✅ EC2 instance module call
+# EC2 instance module call
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 5.6.0"
@@ -43,3 +43,4 @@ module "ec2_instance" {
   ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
   vpc_security_group_ids = var.security_group_ids
   tags                   = local.final_tags
+}
