@@ -3,14 +3,12 @@ provider "aws" {
 }
 
 module "s3_bucket" {
-  source = "git::https://github.com/heathfrantz91-sys/Modules"
+  source = "git::https://github.com/heathfrantz91-sys/Modules.git//aws/s3?ref=main"
 
   bucket                   = var.bucket
-  acl                      = "private"
-  control_object_ownership = true
-  object_ownership         = "ObjectWriter"
+  acl                      = var.acl
+  control_object_ownership = var.control_object_ownership
+  object_ownership         = var.object_ownership
 
-  versioning = {
-    enabled = true
-  }
+  versioning = var.versioning
 }

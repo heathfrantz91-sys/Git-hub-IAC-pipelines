@@ -43,7 +43,4 @@ module "ec2_instance" {
   security_group_ids    = var.security_group_ids
   tags                  = local.final_tags
 
-  cpu_core_count       = var.cpu_core_count
-  cpu_threads_per_core = var.cpu_threads_per_core
-  create               = var.create
 }
