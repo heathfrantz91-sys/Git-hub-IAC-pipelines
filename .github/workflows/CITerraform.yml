@@ -36,6 +36,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Remove cached Terraform modules
+        run: rm -rf infrastructure/ec2/.terraform/modules
 
       - name: 🌍 Set tfvars file based on branch
         id: tfvars
