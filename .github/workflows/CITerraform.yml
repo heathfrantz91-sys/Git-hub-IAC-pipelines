@@ -17,8 +17,8 @@ jobs:
   terraform-ci:
     runs-on: ubuntu-latest
     env:
-      TF_VERSION: 1.5.0
-      AWS_REGION: us-east-1
+      TF_VERSION: 1.5.7           # ✅ Updated full TF version
+      AWS_REGION: us-east-1      # ✅ Updated region
       TFVARS: dev.tfvars
 
     steps:
@@ -37,7 +37,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
           
-      - name: Remove cached Terraform modules
+      - name: 🧹 Remove cached Terraform modules
         run: rm -rf infrastructure/ec2/.terraform/modules
 
       - name: 🌍 Set tfvars file based on branch
@@ -46,8 +46,10 @@ jobs:
           echo "Branch: $GITHUB_REF_NAME"
           if [ "$GITHUB_REF_NAME" = "main" ]; then
             echo "TFVARS=prod.tfvars" >> $GITHUB_ENV
+          elif [ "$GITHUB_REF_NAME" = "qa" ]; then
+            echo "TFVARS=qa.tfvars" >> $GITHUB_ENV
           else
-            echo "TFVARS=${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
+            echo "TFVARS=dev.tfvars" >> $GITHUB_ENV
           fi
 
       # --------------------
