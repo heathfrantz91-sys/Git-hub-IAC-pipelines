@@ -7,7 +7,7 @@ variable "create" {
 variable "name" {
   description = "Name of the EC2 instance"
   type        = string
-  default     = "unkownec2instance"
+  default     = "unknownec2instance"
 }
 
 variable "instance_type" {
@@ -49,4 +49,16 @@ variable "environment" {
   description = "Environment (dev, qa, prod)"
   type        = string
   default     = "dev"
+}
+
+variable "cpu_core_count" {
+  description = "Number of CPU cores for the instance (optional)"
+  type        = number
+  default     = null
+}
+
+variable "cpu_threads_per_core" {
+  description = "Threads per core for the instance (optional)"
+  type        = number
+  default     = null
 }

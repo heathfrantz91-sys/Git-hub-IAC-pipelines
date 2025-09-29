@@ -1,8 +1,8 @@
 provider "aws" {
-  region = "us-east-1" # Optional: can be overridden by CLI/env
+  region = "us-east-1"
 }
 
-# Automatically select latest Ubuntu AMI if none provided
+# Automatically select the latest Ubuntu AMI if none is provided
 data "aws_ami" "default_ubuntu" {
   count       = var.ami == "" ? 1 : 0
   most_recent = true
@@ -20,27 +20,30 @@ data "aws_ami" "default_ubuntu" {
   owners = ["099720109477"] # Canonical (Ubuntu)
 }
 
-# Define local tags to use in the module
+# Define local tags to pass to the module
 locals {
   final_tags = merge(
     {
+      Name        = var.name
       Environment = var.environment
-      Owner       = "heathfrantz"
     },
     var.instance_tags
   )
 }
 
-# EC2 instance module call
+# EC2 instance using your custom GitHub module
 module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 5.6.0"
+  source = "git::https://github.com/heathfrantz91-sys/Modules.git//aws/ec2?ref=main"
 
-  name                   = var.name
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  subnet_id              = var.subnet_id
-  ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
-  vpc_security_group_ids = var.security_group_ids
-  tags                   = local.final_tags
+  name                  = var.name
+  instance_type         = var.instance_type
+  key_name              = var.key_name
+  subnet_id             = var.subnet_id
+  ami                   = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
+  security_group_ids    = var.security_group_ids
+  tags                  = local.final_tags
+
+  cpu_core_count       = var.cpu_core_count
+  cpu_threads_per_core = var.cpu_threads_per_core
+  create               = var.create
 }
