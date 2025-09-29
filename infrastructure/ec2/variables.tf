@@ -47,3 +47,8 @@ variable "cpu_threads_per_core" {
   type        = number
   default     = null
 }
+
+variable "vpc_security_group_ids" {
+  description = "List of security group IDs"
+  type        = list(string)
+}
