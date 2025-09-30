@@ -3,3 +3,16 @@
 *.tfstate.backup
 .terraform.lock.hcl
 *.log
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.bin
+*.exe
+*.dmg
+*.iso
+*.log
+.terraform/
+*.tfstate*
+*.pem
+*.tfvars

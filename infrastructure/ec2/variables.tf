@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of the EC2 instance"
+  description = "EC2 instance name"
   type        = string
 }
 
@@ -9,14 +9,13 @@ variable "instance_type" {
 }
 
 variable "ami" {
-  description = "AMI ID to use for the EC2 instance"
+  description = "AMI ID for EC2 instance"
   type        = string
 }
 
 variable "key_name" {
-  description = "SSH key pair to attach"
+  description = "SSH key name"
   type        = string
-  default     = null
 }
 
 variable "subnet_id" {
@@ -24,8 +23,8 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "security_group_ids" {
-  description = "List of security group IDs"
+variable "vpc_security_group_ids" {
+  description = "Primary list of security group IDs to associate with the EC2 instance"
   type        = list(string)
   default     = []
 }
@@ -48,7 +47,14 @@ variable "cpu_threads_per_core" {
   default     = null
 }
 
-variable "vpc_security_group_ids" {
-  description = "List of VPC security group IDs to attach to the EC2 instance"
+variable "create" {
+  description = "Whether to create the EC2 instance"
+  type        = bool
+  default     = true
+}
+
+variable "security_group_ids" {
+  description = "Fallback list of security group IDs (used if vpc_security_group_ids is empty)"
   type        = list(string)
+  default     = []
 }
