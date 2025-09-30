@@ -17,8 +17,8 @@ jobs:
   terraform-ci:
     runs-on: ubuntu-latest
     env:
-      TF_VERSION: 1.5.7           # ✅ Updated full TF version
-      AWS_REGION: us-east-1      # ✅ Updated region
+      TF_VERSION: 1.5.7
+      AWS_REGION: us-east-1
       TFVARS: dev.tfvars
 
     steps:
@@ -36,9 +36,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          
-      - name: 🧹 Remove cached Terraform modules
-        run: rm -rf infrastructure/ec2/.terraform/modules
+
+      # 🔄 New: Global Terraform cache cleanup (avoids infinite recursion bug)
+      - name: 🧹 Remove all Terraform caches
+        run: |
+          echo "Cleaning all .terraform folders"
+          find . -type d -name ".terraform" -exec rm -rf {} +
+          rm -f .terraform.lock.hcl || true
 
       - name: 🌍 Set tfvars file based on branch
         id: tfvars
@@ -52,14 +56,14 @@ jobs:
             echo "TFVARS=dev.tfvars" >> $GITHUB_ENV
           fi
 
-      # --------------------
-      # EC2 Terraform Plan
-      # --------------------
+      # ---------------------------------
+      # EC2 Module: Terraform Commands
+      # ---------------------------------
       - name: ⚙️ Terraform Init EC2
         run: terraform init
         working-directory: infrastructure/ec2
 
-      - name: 🧹 Terraform Validate EC2
+      - name: 🧪 Terraform Validate EC2
         run: terraform validate
         working-directory: infrastructure/ec2
 
@@ -67,14 +71,14 @@ jobs:
         run: terraform plan -var-file=${{ env.TFVARS }}
         working-directory: infrastructure/ec2
 
-      # --------------------
-      # S3 Terraform Plan
-      # --------------------
+      # ---------------------------------
+      # S3 Module: Terraform Commands
+      # ---------------------------------
       - name: ⚙️ Terraform Init S3
         run: terraform init
         working-directory: infrastructure/s3
 
-      - name: 🧹 Terraform Validate S3
+      - name: 🧪 Terraform Validate S3
         run: terraform validate
         working-directory: infrastructure/s3
 
@@ -82,9 +86,7 @@ jobs:
         run: terraform plan -var-file=${{ env.TFVARS }}
         working-directory: infrastructure/s3
 
-      # --------------------
-      # Set output for downstream CD workflows
-      # --------------------
+      # ✅ Workflow finished successfully
       - name: ✅ Set workflow success output
         id: set_output
         run: echo "terraform_status=success" >> $GITHUB_ENV
