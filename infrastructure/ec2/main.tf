@@ -33,8 +33,8 @@ locals {
 
 # EC2 instance using your custom GitHub module
 module "ec2_instance" {
-  source = "git::https://github.com/heathfrantz91-sys/Modules.git//aws/ec2?ref=main"
-  
+  source = "https://github.com/heathfrantz91-sys/Modules/blob/main/aws/ec2/main.tf"
+
   name                  = var.name
   instance_type         = var.instance_type
   key_name              = var.key_name
