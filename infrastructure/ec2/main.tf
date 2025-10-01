@@ -34,12 +34,17 @@ locals {
 # EC2 instance using your custom GitHub module
 module "ec2_instance" {
   source = "git::https://github.com/heathfrantz91-sys/Modules.git//aws/ec2?ref=main"
-  
+
   name                   = var.name
+  ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
   instance_type          = var.instance_type
   key_name               = var.key_name
   subnet_id              = var.subnet_id
-  ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
-  vpc_security_group_ids = var.security_group_ids     # ✅ FIXED!
+  vpc_security_group_ids = var.security_group_ids
   tags                   = local.final_tags
+
+  # Optional CPU config
+  cpu_core_count        = var.cpu_core_count
+  cpu_threads_per_core  = var.cpu_threads_per_core
+  create                = var.create
 }
