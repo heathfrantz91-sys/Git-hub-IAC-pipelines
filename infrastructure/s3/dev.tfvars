@@ -1,1 +1,5 @@
-bucket = "my-0805-bucket-dev-s3"
+bucket                   = "my-dev-app-bucket"
+acl                      = "private"
+control_object_ownership = true
+object_ownership         = "BucketOwnerEnforced"
+versioning               = true

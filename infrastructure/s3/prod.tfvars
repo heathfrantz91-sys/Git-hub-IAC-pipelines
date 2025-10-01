@@ -1,1 +1,8 @@
-bucket = "my-0805-bucket-prod-s3"
+bucket = "heath-prod-s3-bucket"
+
+versioning = true
+
+tags = {
+  Environment = "prod"
+  Owner       = "heath"
+}
