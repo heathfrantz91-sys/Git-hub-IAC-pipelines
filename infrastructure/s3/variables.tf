@@ -1,28 +1,28 @@
 variable "bucket" {
-  description = "S3 bucket name"
+  description = "Name of the S3 bucket"
   type        = string
 }
 
 variable "acl" {
-  description = "S3 bucket ACL"
+  description = "Access control list setting for the bucket"
   type        = string
   default     = "private"
 }
 
 variable "object_ownership" {
-  description = "S3 bucket ownership control (e.g. ObjectWriter)"
+  description = "Ownership type for the bucket (e.g., ObjectWriter)"
   type        = string
   default     = "ObjectWriter"
 }
 
-variable "versioning" {
-  description = "Enable versioning on the bucket"
+variable "versioning_enabled" {
+  description = "Whether to enable versioning on the S3 bucket"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "tags" {
-  description = "Tags to apply to the bucket"
+  description = "Tags for the S3 bucket"
   type        = map(string)
   default     = {}
 }
