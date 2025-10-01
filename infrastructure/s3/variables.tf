@@ -10,19 +10,19 @@ variable "acl" {
 }
 
 variable "object_ownership" {
-  description = "Ownership setting for S3 bucket objects"
+  description = "S3 bucket ownership control (e.g. ObjectWriter)"
   type        = string
   default     = "ObjectWriter"
 }
 
 variable "versioning" {
-  description = "Enable versioning for the S3 bucket"
+  description = "Enable versioning on the bucket"
   type        = bool
   default     = true
 }
 
 variable "tags" {
-  description = "Tags for the bucket"
+  description = "Tags to apply to the bucket"
   type        = map(string)
   default     = {}
 }
