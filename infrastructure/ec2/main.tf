@@ -35,12 +35,11 @@ locals {
 module "ec2_instance" {
   source = "git::https://github.com/heathfrantz91-sys/Modules.git//aws/ec2?ref=main"
   
-  name                  = var.name
-  instance_type         = var.instance_type
-  key_name              = var.key_name
-  subnet_id             = var.subnet_id
-  ami                   = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
-  security_group_ids    = var.security_group_ids
-  tags                  = local.final_tags
-
+  name                   = var.name
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  subnet_id              = var.subnet_id
+  ami                    = var.ami != "" ? var.ami : data.aws_ami.default_ubuntu[0].id
+  vpc_security_group_ids = var.security_group_ids     # ✅ FIXED!
+  tags                   = local.final_tags
 }
