@@ -9,20 +9,14 @@ variable "acl" {
   default     = "private"
 }
 
-variable "control_object_ownership" {
-  description = "Control ownership flag"
-  type        = bool
-  default     = true
-}
-
 variable "object_ownership" {
-  description = "Ownership setting"
+  description = "Ownership setting for S3 bucket objects"
   type        = string
   default     = "ObjectWriter"
 }
 
 variable "versioning" {
-  description = "Enable versioning (true/false)"
+  description = "Enable versioning for the S3 bucket"
   type        = bool
   default     = true
 }
